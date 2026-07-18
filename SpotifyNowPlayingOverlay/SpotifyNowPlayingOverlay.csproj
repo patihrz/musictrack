@@ -1,0 +1,85 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AssemblyName>MusicTrack</AssemblyName>
+    <RootNamespace>SpotifyNowPlayingOverlay</RootNamespace>
+    <Product>MusicTrack</Product>
+    <ApplicationIcon></ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.4.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="SpotifyAPI.Web" Version="7.4.2" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.9" />
+    <PackageReference Include="Obfuscar" Version="2.2.38" PrivateAssets="All" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <!-- Obfuscation setup for Release configuration -->
+  <Target Name="PrepareObfuscar" BeforeTargets="Obfuscate" Condition="'$(Configuration)' == 'Release'">
+    <ItemGroup>
+      <NETCoreRefFile Include="$(NetCoreTargetingPackRoot)\Microsoft.NETCore.App.Ref\8.0.*\ref\net8.0\System.Runtime.dll" />
+      <WindowsDesktopRefFile Include="$(NetCoreTargetingPackRoot)\Microsoft.WindowsDesktop.App.Ref\8.0.*\ref\net8.0\PresentationFramework.dll" />
+    </ItemGroup>
+    
+    <PropertyGroup>
+      <NETCoreRefDir>%(NETCoreRefFile.RootDir)%(NETCoreRefFile.Directory)</NETCoreRefDir>
+      <WindowsDesktopRefDir>%(WindowsDesktopRefFile.RootDir)%(WindowsDesktopRefFile.Directory)</WindowsDesktopRefDir>
+      <ObfuscarConfig><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<Obfuscator>
+  <Var name="InPath" value="$(TargetDir.TrimEnd('\'))" />
+  <Var name="OutPath" value="$(TargetDir)Obfuscated" />
+  <Var name="KeepPublicApi" value="true" />
+  <Var name="HidePrivateApi" value="true" />
+  <Var name="RenameProperties" value="false" />
+  <Var name="RenameEvents" value="true" />
+  <Var name="RenameFields" value="true" />
+  <Var name="EncryptString" value="true" />
+  
+  <AssemblySearchPath path="$(NETCoreRefDir)" />
+  <AssemblySearchPath path="$(WindowsDesktopRefDir)" />
+  
+  <Module file="$(TargetDir)$(TargetFileName)" />
+</Obfuscator>]]></ObfuscarConfig>
+    </PropertyGroup>
+    
+    <WriteLinesToFile File="$(ProjectDir)obfuscar.xml" Lines="$(ObfuscarConfig)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+  </Target>
+
+  <Target Name="Obfuscate" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Message Importance="High" Text="Running Obfuscar code protection..." />
+    <Exec Command="&quot;$(PkgObfuscar)\tools\Obfuscar.Console.exe&quot; &quot;$(ProjectDir)obfuscar.xml&quot;" />
+    
+    <!-- Copy the obfuscated assembly back to the build output directory and intermediate directory (to make sure single file publish picks it up) -->
+    <Copy SourceFiles="$(TargetDir)Obfuscated\$(TargetFileName)" 
+          DestinationFiles="$(TargetDir)$(TargetFileName)" 
+          OverwriteReadOnlyFiles="true" />
+    <Copy SourceFiles="$(TargetDir)Obfuscated\$(TargetName).pdb" 
+          DestinationFiles="$(TargetDir)$(TargetName).pdb" 
+          OverwriteReadOnlyFiles="true" 
+          Condition="Exists('$(TargetDir)Obfuscated\$(TargetName).pdb')" />
+          
+    <Copy SourceFiles="$(TargetDir)Obfuscated\$(TargetFileName)" 
+          DestinationFiles="$(ProjectDir)$(IntermediateOutputPath)$(TargetFileName)" 
+          OverwriteReadOnlyFiles="true" />
+    <Copy SourceFiles="$(TargetDir)Obfuscated\$(TargetName).pdb" 
+          DestinationFiles="$(ProjectDir)$(IntermediateOutputPath)$(TargetName).pdb" 
+          OverwriteReadOnlyFiles="true" 
+          Condition="Exists('$(TargetDir)Obfuscated\$(TargetName).pdb')" />
+          
+    <Message Importance="High" Text="Obfuscation complete. Protected assembly replaced in output and intermediate paths." />
+  </Target>
+
+</Project>

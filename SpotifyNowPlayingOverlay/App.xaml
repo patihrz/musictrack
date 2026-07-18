@@ -1,0 +1,8 @@
+<Application x:Class="SpotifyNowPlayingOverlay.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SpotifyNowPlayingOverlay">
+    <Application.Resources>
+        <!-- Application-wide styles if any -->
+    </Application.Resources>
+</Application>
