@@ -1,5 +1,11 @@
 # MusicTrack
 
+[![VirusTotal](https://img.shields.io/badge/VirusTotal-0%20%2F%2092%20%E2%9C%94-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/url/b27d3ab1a8a9595b1696a239eec62ee0d9233b889406bef94af4844d7fa85bcc)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-blue?logo=windows&logoColor=white)](https://github.com/patihrz/musictrack/releases/latest)
+[![.NET](https://img.shields.io/badge/.NET-8.0%20WPF-purple?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![Release](https://img.shields.io/github/v/release/patihrz/musictrack?color=1DB954&logo=github)](https://github.com/patihrz/musictrack/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/patihrz/musictrack/total?color=1DB954)](https://github.com/patihrz/musictrack/releases)
+
 A lightweight, high-performance, borderless transparent Windows desktop overlay for displaying the currently playing Spotify song. Designed specifically for streamers to capture using **TikTok LIVE Studio** (or OBS) via Window Capture without requiring browser sources or external web services.
 
 ---
@@ -95,3 +101,21 @@ To add the overlay to your livestream layout:
 4. Ensure the capture mode is set to **Windows Graphics Capture (WGC)** (this is crucial for transparent windows).
 5. Tick **Capture Transparency / Allows Alpha** if the checkbox is available.
 6. The overlay will show up with a perfectly transparent background on your stream feed!
+
+---
+
+## 🔒 Security & Privacy
+
+[![VirusTotal](https://img.shields.io/badge/VirusTotal-0%20%2F%2092%20%E2%9C%94-brightgreen?logo=virustotal&logoColor=white)](https://www.virustotal.com/gui/url/b27d3ab1a8a9595b1696a239eec62ee0d9233b889406bef94af4844d7fa85bcc)
+
+MusicTrack is **100% open source** and has been scanned clean by **92 antivirus engines** on VirusTotal.
+
+| | Details |
+|---|---|
+| 🛡️ **VirusTotal Result** | [0 / 92 — Undetected ✔](https://www.virustotal.com/gui/url/b27d3ab1a8a9595b1696a239eec62ee0d9233b889406bef94af4844d7fa85bcc) |
+| 🔐 **Authentication** | OAuth 2.0 PKCE — your Spotify credentials are never seen by this app |
+| 🔑 **Token Storage** | Refresh token encrypted via Windows DPAPI (machine-locked, never leaves your PC) |
+| 🌐 **Network** | Only connects to `api.spotify.com` — no telemetry, no tracking, no ads |
+| 💾 **Data Stored Locally** | Settings JSON + artwork cache in `%APPDATA%\MusicTrack\` |
+
+> **Why might antivirus flag WPF apps?** Some AV tools flag any obfuscated or self-contained .NET EXE as "suspicious" by heuristic. MusicTrack uses [Obfuscar](https://github.com/obfuscar/obfuscar) for code protection, which is standard practice. The VirusTotal scan above confirms **0 real detections**.
