@@ -39,7 +39,7 @@ namespace SpotifyNowPlayingOverlay.Controls
             string templateXml = @"
                 <ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
                                  xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
-                                 xmlns:local='clr-namespace:SpotifyNowPlayingOverlay.Controls;assembly=SpotifyNowPlayingOverlay'
+                                 xmlns:local='clr-namespace:SpotifyNowPlayingOverlay.Controls;assembly=MusicTrack'
                                  TargetType='local:MarqueeTextBlock'>
                     <Border Background='Transparent' ClipToBounds='True'>
                         <Canvas x:Name='PART_Canvas' ClipToBounds='True' Background='Transparent' Height='{TemplateBinding Height}'>
