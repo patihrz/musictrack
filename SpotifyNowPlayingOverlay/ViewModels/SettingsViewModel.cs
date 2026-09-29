@@ -251,6 +251,34 @@ namespace SpotifyNowPlayingOverlay.ViewModels
             }
         }
 
+        public bool ShowLyrics
+        {
+            get => _settingsService.CurrentSettings.ShowLyrics;
+            set
+            {
+                if (_settingsService.CurrentSettings.ShowLyrics != value)
+                {
+                    _settingsService.CurrentSettings.ShowLyrics = value;
+                    OnPropertyChanged();
+                    _settingsService.SaveSettings();
+                }
+            }
+        }
+
+        public double LyricsFontSize
+        {
+            get => _settingsService.CurrentSettings.LyricsFontSize;
+            set
+            {
+                if (Math.Abs(_settingsService.CurrentSettings.LyricsFontSize - value) > 0.1)
+                {
+                    _settingsService.CurrentSettings.LyricsFontSize = Math.Clamp(value, 9.0, 26.0);
+                    OnPropertyChanged();
+                    _settingsService.SaveSettings();
+                }
+            }
+        }
+
         public double PollIntervalSeconds
         {
             get => _settingsService.CurrentSettings.PollIntervalSeconds;

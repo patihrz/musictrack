@@ -13,6 +13,9 @@
     <AssemblyName>MusicTrack</AssemblyName>
     <RootNamespace>SpotifyNowPlayingOverlay</RootNamespace>
     <Product>MusicTrack</Product>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
     <ApplicationIcon></ApplicationIcon>
   </PropertyGroup>
 

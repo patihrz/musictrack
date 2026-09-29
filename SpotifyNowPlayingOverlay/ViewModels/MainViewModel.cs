@@ -21,6 +21,7 @@ namespace SpotifyNowPlayingOverlay.ViewModels
         private readonly ISettingsService _settingsService;
         private readonly IHotkeyService _hotkeyService;
         private readonly ISmartPollingService _smartPollingService;
+        private readonly ILyricsService _lyricsService;
 
         private string _songTitle = "Connecting to Spotify...";
         private string _songArtist = string.Empty;
@@ -42,6 +43,13 @@ namespace SpotifyNowPlayingOverlay.ViewModels
         private bool _isOverlayVisible = true;
         private bool _isManuallyHidden;
         private bool _isLoggedIn;
+
+        // Lyrics fields
+        private LyricsResult? _currentLyrics;
+        private string _currentLyricText = string.Empty;
+        private string _nextLyricText = string.Empty;
+        private bool _showLyrics = true;
+        private double _lyricsFontSize = 13.0;
 
         // Overlay Style Properties (Synced from Settings)
         private double _scale = 1.0;
@@ -66,18 +74,21 @@ namespace SpotifyNowPlayingOverlay.ViewModels
         public IRelayCommand ToggleLockCommand { get; }
         public IRelayCommand ToggleClickThroughCommand { get; }
         public IRelayCommand ToggleAlwaysOnTopCommand { get; }
+        public IRelayCommand ToggleLyricsCommand { get; }
         public IRelayCommand CopySongCommand { get; }
 
         public MainViewModel(
             ISpotifyService spotifyService,
             ISettingsService settingsService,
             IHotkeyService hotkeyService,
-            ISmartPollingService smartPollingService)
+            ISmartPollingService smartPollingService,
+            ILyricsService lyricsService)
         {
             _spotifyService = spotifyService;
             _settingsService = settingsService;
             _hotkeyService = hotkeyService;
             _smartPollingService = smartPollingService;
+            _lyricsService = lyricsService;
 
             // Commands
             LoginCommand = new AsyncRelayCommand(LoginAsync);
@@ -85,6 +96,7 @@ namespace SpotifyNowPlayingOverlay.ViewModels
             ToggleLockCommand = new RelayCommand(ToggleLock);
             ToggleClickThroughCommand = new RelayCommand(ToggleClickThrough);
             ToggleAlwaysOnTopCommand = new RelayCommand(ToggleAlwaysOnTop);
+            ToggleLyricsCommand = new RelayCommand(ToggleLyrics);
             CopySongCommand = new RelayCommand(CopySong);
 
             // Sync Settings initial
@@ -354,6 +366,49 @@ namespace SpotifyNowPlayingOverlay.ViewModels
             set => SetProperty(ref _lockOverlay, value);
         }
 
+        public bool ShowLyrics
+        {
+            get => _showLyrics;
+            set
+            {
+                if (SetProperty(ref _showLyrics, value))
+                {
+                    if (_settingsService.CurrentSettings.ShowLyrics != value)
+                    {
+                        _settingsService.CurrentSettings.ShowLyrics = value;
+                        _settingsService.SaveSettings();
+                    }
+                    OnPropertyChanged(nameof(HasLyrics));
+                }
+            }
+        }
+
+        public double LyricsFontSize
+        {
+            get => _lyricsFontSize;
+            set => SetProperty(ref _lyricsFontSize, value);
+        }
+
+        public string CurrentLyricText
+        {
+            get => _currentLyricText;
+            set
+            {
+                if (SetProperty(ref _currentLyricText, value))
+                {
+                    OnPropertyChanged(nameof(HasLyrics));
+                }
+            }
+        }
+
+        public string NextLyricText
+        {
+            get => _nextLyricText;
+            set => SetProperty(ref _nextLyricText, value);
+        }
+
+        public bool HasLyrics => ShowLyrics && (!string.IsNullOrWhiteSpace(CurrentLyricText) || !string.IsNullOrWhiteSpace(NextLyricText));
+
         #endregion
 
 
@@ -372,6 +427,8 @@ namespace SpotifyNowPlayingOverlay.ViewModels
             ClickThrough = s.ClickThrough;
             LockOverlay = s.LockOverlay;
             IsOverlayVisible = s.IsOverlayVisible;
+            ShowLyrics = s.ShowLyrics;
+            LyricsFontSize = s.LyricsFontSize;
             _isManuallyHidden = !s.IsOverlayVisible;
         }
 
@@ -388,6 +445,8 @@ namespace SpotifyNowPlayingOverlay.ViewModels
 
                 ProgressPercentage = ((double)_currentProgressMs / _durationMs) * 100.0;
                 ElapsedTimeText = FormatTime(_currentProgressMs);
+
+                UpdateActiveLyrics(TimeSpan.FromMilliseconds(_currentProgressMs));
             }
         }
 
@@ -495,15 +554,88 @@ namespace SpotifyNowPlayingOverlay.ViewModels
             {
                 SongTitle = state.Title;
                 SongArtist = state.Artist;
+                _ = FetchLyricsForCurrentTrackAsync(state.Title, state.Artist, state.DurationMs);
             }
             else
             {
                 SongTitle = StatusText;
                 SongArtist = string.Empty;
+                _currentLyrics = null;
+                CurrentLyricText = string.Empty;
+                NextLyricText = string.Empty;
             }
 
             // 6. Show Text (begins fade in storyboard)
             IsTextVisible = true;
+        }
+
+        private async Task FetchLyricsForCurrentTrackAsync(string title, string artist, long durationMs)
+        {
+            if (string.IsNullOrWhiteSpace(title) || Status == PlaybackStatus.NotLoggedIn || Status == PlaybackStatus.NoMusic)
+            {
+                _currentLyrics = null;
+                CurrentLyricText = string.Empty;
+                NextLyricText = string.Empty;
+                return;
+            }
+
+            CurrentLyricText = "Loading lyrics...";
+            NextLyricText = string.Empty;
+
+            var result = await _lyricsService.GetLyricsAsync(title, artist, string.Empty, durationMs / 1000.0);
+            _currentLyrics = result;
+
+            if (result.Found)
+            {
+                if (result.IsSynced)
+                {
+                    UpdateActiveLyrics(TimeSpan.FromMilliseconds(_currentProgressMs));
+                }
+                else
+                {
+                    CurrentLyricText = result.PlainLyrics;
+                    NextLyricText = string.Empty;
+                }
+            }
+            else
+            {
+                CurrentLyricText = "No lyrics found";
+                NextLyricText = string.Empty;
+            }
+        }
+
+        private void UpdateActiveLyrics(TimeSpan currentPos)
+        {
+            if (_currentLyrics == null || !_currentLyrics.IsSynced || _currentLyrics.SyncedLines.Count == 0)
+            {
+                return;
+            }
+
+            var lines = _currentLyrics.SyncedLines;
+            int activeIndex = -1;
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].Timestamp <= currentPos)
+                {
+                    activeIndex = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (activeIndex >= 0)
+            {
+                CurrentLyricText = lines[activeIndex].Text;
+                NextLyricText = (activeIndex + 1 < lines.Count) ? lines[activeIndex + 1].Text : string.Empty;
+            }
+            else
+            {
+                CurrentLyricText = string.Empty;
+                NextLyricText = lines.Count > 0 ? lines[0].Text : string.Empty;
+            }
         }
 
         private string FormatTime(long ms)
@@ -544,6 +676,14 @@ namespace SpotifyNowPlayingOverlay.ViewModels
             SongArtist = string.Empty;
             ArtworkA = string.Empty;
             ArtworkB = string.Empty;
+            _currentLyrics = null;
+            CurrentLyricText = string.Empty;
+            NextLyricText = string.Empty;
+        }
+
+        private void ToggleLyrics()
+        {
+            ShowLyrics = !ShowLyrics;
         }
 
         private void ToggleLock()

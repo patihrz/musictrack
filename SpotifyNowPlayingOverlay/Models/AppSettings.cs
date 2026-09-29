@@ -20,6 +20,8 @@ namespace SpotifyNowPlayingOverlay.Models
         public bool HideWhenPaused { get; set; } = false;
         public bool PinToDesktop { get; set; } = false;
         public bool IsOverlayVisible { get; set; } = true;
+        public bool ShowLyrics { get; set; } = true;
+        public double LyricsFontSize { get; set; } = 13.0;
         public bool LockOverlay { get; set; } = false;
         public double WindowLeft { get; set; } = 100;
         public double WindowTop { get; set; } = 100;

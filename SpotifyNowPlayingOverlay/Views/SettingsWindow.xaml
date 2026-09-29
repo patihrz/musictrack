@@ -356,6 +356,31 @@
                         </Grid>
                     </Grid>
                 </GroupBox>
+
+                <!-- Lyrics Group -->
+                <GroupBox Header="Lyrics (Lirik)">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Show Lyrics Toggle -->
+                        <Label Grid.Row="0" Grid.Column="0" Content="Show Synced Lyrics (Tampilkan Lirik Lagu)"/>
+                        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding ShowLyrics}" VerticalAlignment="Center" Margin="0,4"/>
+
+                        <!-- Lyrics Font Size -->
+                        <Label Grid.Row="1" Grid.Column="0" Content="Lyrics Font Size (Ukuran Font Lirik):" Visibility="{Binding ShowLyrics, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,4" Visibility="{Binding ShowLyrics, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Slider Width="100" Minimum="10" Maximum="24" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding LyricsFontSize}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding LyricsFontSize}" Width="35" Foreground="{Binding AccentBrush}" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center" TextAlignment="Right"/>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
             </StackPanel>
         </ScrollViewer>
         </Grid>
@@ -375,7 +400,7 @@
                 <!-- Version -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
                     <Border Background="#1DB954" CornerRadius="4" Padding="8,3">
-                        <TextBlock Text="Version 1.0.0" FontSize="13" FontWeight="Bold" Foreground="Black"/>
+                        <TextBlock Text="Version 1.1.0" FontSize="13" FontWeight="Bold" Foreground="Black"/>
                     </Border>
                 </StackPanel>
 

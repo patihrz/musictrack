@@ -45,7 +45,8 @@
                 BorderThickness="1" 
                 BorderBrush="{Binding AccentColorBrush}" 
                 Width="360" 
-                Height="96" 
+                MinHeight="96"
+                Height="Auto" 
                 Margin="5"
                 ClipToBounds="True"
                 Background="{Binding BackgroundBrush}">
@@ -54,221 +55,297 @@
             </Border.Effect>
             
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <!-- Floating Control Buttons (visible on hover) -->
-                <StackPanel Grid.ColumnSpan="2"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Right"
-                            Margin="0,4,4,0">
-                    <!-- Hide Button -->
-                    <Button x:Name="HideButton"
-                            Content="👁"
-                            Width="22"
-                            Height="22"
-                            Margin="0,0,4,0"
-                            Cursor="Hand"
-                            Click="HideButton_Click"
-                            ToolTip="Hide Overlay (Ctrl+Shift+H)">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="Foreground" Value="#888888"/>
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Opacity" Value="0"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
-                                        <Setter Property="Opacity" Value="0.6"/>
-                                    </DataTrigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Opacity" Value="1.0"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                    <!-- Settings Button -->
-                    <Button x:Name="SettingsButton"
-                            Content="⚙"
-                            Width="22"
-                            Height="22"
-                            Cursor="Hand"
-                            Click="SettingsButton_Click"
-                            ToolTip="Settings (Ctrl+Shift+S)">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="Foreground" Value="#888888"/>
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Opacity" Value="0"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
-                                        <Setter Property="Opacity" Value="0.6"/>
-                                    </DataTrigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Opacity" Value="1.0"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </StackPanel>
+                    <!-- Floating Control Buttons (visible on hover) -->
+                    <StackPanel Grid.ColumnSpan="2"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Right"
+                                Margin="0,4,4,0"
+                                Canvas.ZIndex="10">
+                        <!-- Lyrics Button -->
+                        <Button x:Name="LyricsButton"
+                                Content="🎤"
+                                Width="22"
+                                Height="22"
+                                Margin="0,0,4,0"
+                                Cursor="Hand"
+                                Command="{Binding ToggleLyricsCommand}"
+                                ToolTip="Toggle Lyrics">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="#888888"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Opacity" Value="0"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                            <Setter Property="Opacity" Value="0.6"/>
+                                        </DataTrigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="1.0"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                        <DataTrigger Binding="{Binding ShowLyrics}" Value="True">
+                                            <Setter Property="Foreground" Value="{Binding AccentColorBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
 
-                <!-- Album Art Section (Column 0) -->
-                <Grid Grid.Column="0" Margin="8" Width="{Binding AlbumSize}" Height="{Binding AlbumSize}">
-                    <!-- Image A -->
-                    <Border x:Name="BorderA" CornerRadius="{Binding OverlayCornerRadius}" ClipToBounds="True">
-                        <Border.Background>
-                            <ImageBrush ImageSource="{Binding ArtworkA}" Stretch="UniformToFill"/>
-                        </Border.Background>
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Opacity" Value="0" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsArtworkACurrent}" Value="True">
-                                        <DataTrigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.EnterActions>
-                                        <DataTrigger.ExitActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.ExitActions>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                    </Border>
+                        <!-- Hide Button -->
+                        <Button x:Name="HideButton"
+                                Content="👁"
+                                Width="22"
+                                Height="22"
+                                Margin="0,0,4,0"
+                                Cursor="Hand"
+                                Click="HideButton_Click"
+                                ToolTip="Hide Overlay (Ctrl+Shift+H)">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="#888888"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Opacity" Value="0"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                            <Setter Property="Opacity" Value="0.6"/>
+                                        </DataTrigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="1.0"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
 
-                    <!-- Image B -->
-                    <Border x:Name="BorderB" CornerRadius="{Binding OverlayCornerRadius}" ClipToBounds="True">
-                        <Border.Background>
-                            <ImageBrush ImageSource="{Binding ArtworkB}" Stretch="UniformToFill"/>
-                        </Border.Background>
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Opacity" Value="0" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsArtworkACurrent}" Value="False">
-                                        <DataTrigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.EnterActions>
-                                        <DataTrigger.ExitActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.ExitActions>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                    </Border>
-                </Grid>
-
-                <!-- Text & Metadata Section (Column 1) -->
-                <Grid Grid.Column="1" Margin="4,8,12,8" VerticalAlignment="Center">
-                    <StackPanel x:Name="TextContainer">
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
-                                <Setter Property="Opacity" Value="1" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsTextVisible}" Value="False">
-                                        <DataTrigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.EnterActions>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsTextVisible}" Value="True">
-                                        <DataTrigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.EnterActions>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
-
-                        <!-- Song Title -->
-                        <controls:MarqueeTextBlock Text="{Binding SongTitle}" 
-                                                   Foreground="White" 
-                                                   FontFamily="Segoe UI" 
-                                                   FontWeight="Bold" 
-                                                   FontSize="{Binding SongTitleFontSize}" />
-
-                        <!-- Artist Name -->
-                        <controls:MarqueeTextBlock Text="{Binding SongArtist}" 
-                                                   Foreground="#AAAAAA" 
-                                                   FontFamily="Segoe UI" 
-                                                   FontSize="{Binding FontSize}" 
-                                                   Margin="0,2,0,2"
-                                                   Visibility="{Binding SongArtist, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
-
-                        <!-- Progress Bar & Elapsed/Remaining time -->
-                        <Grid Visibility="{Binding ShowProgressBar, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,4,0,0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <ProgressBar Grid.Row="0" 
-                                         Height="4" 
-                                         Minimum="0" 
-                                         Maximum="100" 
-                                         Value="{Binding ProgressPercentage}" 
-                                         Foreground="{Binding AccentColorBrush}" 
-                                         Background="#333333" 
-                                         BorderThickness="0"/>
-
-                            <Grid Grid.Row="1" Margin="0,2,0,0">
-                                <TextBlock Text="{Binding ElapsedTimeText}" Foreground="#888888" FontSize="10" HorizontalAlignment="Left" FontFamily="Segoe UI"/>
-                                <TextBlock Text="{Binding DurationTimeText}" Foreground="#888888" FontSize="10" HorizontalAlignment="Right" FontFamily="Segoe UI"/>
-                            </Grid>
-                        </Grid>
+                        <!-- Settings Button -->
+                        <Button x:Name="SettingsButton"
+                                Content="⚙"
+                                Width="22"
+                                Height="22"
+                                Cursor="Hand"
+                                Click="SettingsButton_Click"
+                                ToolTip="Settings (Ctrl+Shift+S)">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="#888888"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Opacity" Value="0"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                            <Setter Property="Opacity" Value="0.6"/>
+                                        </DataTrigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="1.0"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
+
+                    <!-- Album Art Section (Column 0) -->
+                    <Grid Grid.Column="0" Margin="8" Width="{Binding AlbumSize}" Height="{Binding AlbumSize}">
+                        <!-- Image A -->
+                        <Border x:Name="BorderA" CornerRadius="{Binding OverlayCornerRadius}" ClipToBounds="True">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding ArtworkA}" Stretch="UniformToFill"/>
+                            </Border.Background>
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Opacity" Value="0" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsArtworkACurrent}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+
+                        <!-- Image B -->
+                        <Border x:Name="BorderB" CornerRadius="{Binding OverlayCornerRadius}" ClipToBounds="True">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding ArtworkB}" Stretch="UniformToFill"/>
+                            </Border.Background>
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Opacity" Value="0" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsArtworkACurrent}" Value="False">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+                    </Grid>
+
+                    <!-- Text & Metadata Section (Column 1) -->
+                    <Grid Grid.Column="1" Margin="4,8,12,8" VerticalAlignment="Center">
+                        <StackPanel x:Name="TextContainer">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsTextVisible}" Value="False">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsTextVisible}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <!-- Song Title -->
+                            <controls:MarqueeTextBlock Text="{Binding SongTitle}" 
+                                                       Foreground="White" 
+                                                       FontFamily="Segoe UI" 
+                                                       FontWeight="Bold" 
+                                                       FontSize="{Binding SongTitleFontSize}" />
+
+                            <!-- Artist Name -->
+                            <controls:MarqueeTextBlock Text="{Binding SongArtist}" 
+                                                       Foreground="#AAAAAA" 
+                                                       FontFamily="Segoe UI" 
+                                                       FontSize="{Binding FontSize}" 
+                                                       Margin="0,2,0,2"
+                                                       Visibility="{Binding SongArtist, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+
+                            <!-- Progress Bar & Elapsed/Remaining time -->
+                            <Grid Visibility="{Binding ShowProgressBar, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,4,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <ProgressBar Grid.Row="0" 
+                                             Height="4" 
+                                             Minimum="0" 
+                                             Maximum="100" 
+                                             Value="{Binding ProgressPercentage}" 
+                                             Foreground="{Binding AccentColorBrush}" 
+                                             Background="#333333" 
+                                             BorderThickness="0"/>
+
+                                <Grid Grid.Row="1" Margin="0,2,0,0">
+                                    <TextBlock Text="{Binding ElapsedTimeText}" Foreground="#888888" FontSize="10" HorizontalAlignment="Left" FontFamily="Segoe UI"/>
+                                    <TextBlock Text="{Binding DurationTimeText}" Foreground="#888888" FontSize="10" HorizontalAlignment="Right" FontFamily="Segoe UI"/>
+                                </Grid>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
+
+                <!-- Synced Lyrics Display Section (Row 1) -->
+                <Border Grid.Row="1" 
+                        Visibility="{Binding HasLyrics, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        BorderThickness="0,1,0,0" 
+                        BorderBrush="#25FFFFFF" 
+                        Background="#15000000"
+                        Padding="12,6,12,8">
+                    <StackPanel x:Name="LyricsContainer">
+                        <!-- Current Line (Active Accent Highlight) -->
+                        <TextBlock Text="{Binding CurrentLyricText}" 
+                                   Foreground="{Binding AccentColorBrush}" 
+                                   FontFamily="Segoe UI" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="{Binding LyricsFontSize}" 
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"/>
+                        <!-- Next Line (Dimmed Preview) -->
+                        <TextBlock Text="{Binding NextLyricText}" 
+                                   Foreground="#777777" 
+                                   FontFamily="Segoe UI" 
+                                   FontSize="{Binding LyricsFontSize}" 
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   Margin="0,2,0,0"
+                                   Visibility="{Binding NextLyricText, Converter={StaticResource NullOrEmptyToVisibilityConverter}}"/>
+                    </StackPanel>
+                </Border>
             </Grid>
         </Border>
     </Grid>

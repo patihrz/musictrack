@@ -10,8 +10,29 @@ A lightweight, high-performance, borderless transparent Windows desktop overlay 
 
 ---
 
+> [!TIP]
+> ### 📢 Version 1.1 Update Available!
+> **Halo Pengguna MusicTrack!** Versi terbaru **v1.1** telah dirilis dengan fitur **Lirik Lagu Tersinkronisasi (*Synced Lyrics*)**, **Pin to Desktop Widget Mode**, dan perbaikan UI. 
+> 
+> Bagi pengguna versi **v1.0 (versi lama)**, aplikasi lu **masih tetap bisa dipakai dengan lancar**, namun sangat disarankan untuk **mengunduh update versi v1.1 ini** dari halaman [Releases](https://github.com/patihrz/musictrack/releases/latest) untuk mendapatkan fitur-fitur baru berikut!
+
+---
+
+## 🌟 What's New in Version 1.1
+
+- **🎤 Synced Song Lyrics**: Display live synchronized song lyrics matching Spotify playback timing in real-time.
+- **🔘 Lyrics Toggle Button (`🎤`)**: Easily toggle lyrics ON or OFF directly from the overlay hover controls or Settings window.
+- **🔤 Lyrics Font Size Customization**: Adjust lyrics text font size dynamically from 10px to 24px in Settings.
+- **📌 Pin to Desktop (Widget Mode)**: Pin the overlay permanently behind all open windows (`HWND_BOTTOM`) like a desktop widget.
+- **🎨 Synchronized Theme Accent Colors**: All settings UI elements and overlay borders now dynamically match your custom hex accent color.
+- **📐 Dynamic Title Measuring**: Song titles and artist names auto-measure height, preventing clipping at larger font sizes.
+- **🔒 Obfuscated Single-File Executable**: Built into a single executable bundle using Obfuscar code protection.
+
+---
+
 ## Features
 
+- **Synced Lyrics Display**: Live synced lyrics powered by LrcLib with ON/OFF toggle and adjustable font size.
 - **OAuth PKCE Connection**: Secure connection directly with Spotify without a backend.
 - **Hardware-Accelerated Transitions**: Smooth 200ms fade-in/fade-out animations on song change.
 - **Album Artwork Crossfade**: Seamlessly crossfades covers during transitions.
@@ -19,11 +40,13 @@ A lightweight, high-performance, borderless transparent Windows desktop overlay 
 - **WPF Native Transparency**: Borderless overlay captured perfectly in Window Capture modes.
 - **Global Hotkeys**:
   - `Ctrl + Shift + H`: Hide / Show the overlay.
+  - `Ctrl + Shift + S`: Open Settings window.
   - `Ctrl + Shift + L`: Lock / Unlock the overlay position (draggable while unlocked).
 - **Responsive Customizations**:
-  - Adjustable scale, background opacity, corners radius, album size, and font sizes.
+  - Adjustable scale, background opacity, corner radius, album size, font sizes, and lyrics font size.
   - Predefined or custom hex accent colors (Spotify Green by default).
   - Auto-hide overlay after configurable seconds when music is paused.
+  - Pin to Desktop widget mode to glue overlay behind open applications.
   - High-frequency local timer for smooth progress bar updates.
 - **Performance Optimized**: Built using WPF Native .NET 8, maintaining `<1%` CPU and `<50MB` RAM.
 

@@ -118,6 +118,7 @@ namespace SpotifyNowPlayingOverlay
             services.AddSingleton<ISettingsService, SettingsService>();
             services.AddSingleton<IArtworkCacheManager, ArtworkCacheManager>();
             services.AddSingleton<ISpotifyService, SpotifyService>();
+            services.AddSingleton<ILyricsService, LyricsService>();
             services.AddSingleton<ISmartPollingService, SmartPollingService>();
             services.AddSingleton<IHotkeyService, HotkeyService>();
 
