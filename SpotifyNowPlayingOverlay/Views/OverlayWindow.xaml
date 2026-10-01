@@ -251,7 +251,7 @@
                     </Grid>
 
                     <!-- Text & Metadata Section (Column 1) -->
-                    <Grid Grid.Column="1" Margin="4,8,76,8" VerticalAlignment="Center">
+                    <Grid Grid.Column="1" Margin="4,8,12,8" VerticalAlignment="Center">
                         <StackPanel x:Name="TextContainer">
                             <StackPanel.Style>
                                 <Style TargetType="StackPanel">
